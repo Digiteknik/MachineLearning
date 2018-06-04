@@ -8,6 +8,7 @@ import oscP5.*;
 import netP5.*;
 
 PImage webImg;
+String url2 = "http://webcam.trafikken.dk/webcam/Roskilde_10.jpg?1528114893099";
 String url = "http://87.59.28.70/record/current.jpg?rand=0.3371342047624182";
 
 
@@ -41,12 +42,12 @@ void setup() {
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 9000);
   dest = new NetAddress("192.168.8.102", 6448);
-  webImg = loadImage(url, "png");
+  webImg = loadImage(url, "jpg");
 }
 
 void draw() {
   if(frameCount % 10 == 0){
-    webImg = loadImage(url, "png");
+    webImg = loadImage(url, "jpg");
   }
     image(webImg, 0, 0);
     numPixelsOrig = webImg.width * webImg.height;
