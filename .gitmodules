@@ -1,0 +1,3 @@
+[submodule "wekinator_examples"]
+	path = wekinator_examples
+	url = https://github.com/fiebrink1/wekinator_examples
