@@ -1,3 +1,6 @@
 [submodule "wekinator_examples"]
 	path = wekinator_examples
 	url = https://github.com/fiebrink1/wekinator_examples
+[submodule "p5js-osc"]
+	path = p5js-osc
+	url = https://github.com/genekogan/p5js-osc

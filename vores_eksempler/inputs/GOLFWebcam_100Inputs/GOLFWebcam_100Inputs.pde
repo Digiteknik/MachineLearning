@@ -8,22 +8,24 @@ import oscP5.*;
 import netP5.*;
 
 PImage webImg;
-String url2 = "http://webcam.trafikken.dk/webcam/Roskilde_10.jpg?1528114893099";
+String url2 = "http://webcam.trafikken.dk/webcam/GroennemoseAlle_Cam1.jpg";
 String url = "http://87.59.28.70/record/current.jpg?rand=0.3371342047624182";
 
-
-int numPixelsOrig;
 int numPixels;
 boolean first = true;
+
+int imageWidth = 640;
+int imageHeight = 480;
 
 int boxWidth = 64;
 int boxHeight = 48;
 
-int numHoriz = 640/boxWidth;
-int numVert = 480/boxHeight;
+int numHoriz;
+;
+int numVert;
+;
 
-color[] downPix = new color[numHoriz * numVert];
-
+color[] downPix;
 
 Capture video;
 
@@ -35,24 +37,25 @@ void setup() {
   size(640, 480, P2D);
   //frameRate(10);
 
-
-
-
-
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 9000);
   dest = new NetAddress("192.168.8.102", 6448);
+
   webImg = loadImage(url, "jpg");
+
+  numHoriz = webImg.width/boxWidth;
+  numVert = webImg.height/boxHeight;
+
+  downPix = new color[numHoriz * numVert];
 }
 
 void draw() {
-  if(frameCount % 10 == 0){
+  if (frameCount % 10 == 0) {
     webImg = loadImage(url, "jpg");
   }
-    image(webImg, 0, 0);
-    numPixelsOrig = webImg.width * webImg.height;
-    loadPixels();
-    noStroke();
+  image(webImg, 0, 0);
+  loadPixels();
+  noStroke();
 
   webImg.loadPixels(); // Make the pixels of video available
   /*for (int i = 0; i < numPixels; i++) {
@@ -67,13 +70,13 @@ void draw() {
    } */
   int boxNum = 0;
   int tot = boxWidth*boxHeight;
-  for (int x = 0; x < 640; x += boxWidth) {
-    for (int y = 0; y < 480; y += boxHeight) {
+  for (int x = 0; x < webImg.width; x += boxWidth) {
+    for (int y = 0; y < webImg.height; y += boxHeight) {
       float red = 0, green = 0, blue = 0;
 
       for (int i = 0; i < boxWidth; i++) {
         for (int j = 0; j < boxHeight; j++) {
-          int index = (x + i) + (y + j) * 640;
+          int index = (x + i) + (y + j) * webImg.width;
           red += red(webImg.pixels[index]);
           green += green(webImg.pixels[index]);
           blue += blue(webImg.pixels[index]);
@@ -81,9 +84,9 @@ void draw() {
       }
       downPix[boxNum] =  color(red/tot, green/tot, blue/tot);
       // downPix[boxNum] = color((float)red/tot, (float)green/tot, (float)blue/tot);
-      fill(downPix[boxNum]);
+      fill(downPix[boxNum], 64);
 
-      int index = x + 640*y;
+      int index = x + webImg.width * y;
       red += red(webImg.pixels[index]);
       green += green(webImg.pixels[index]);
       blue += blue(webImg.pixels[index]);
@@ -101,19 +104,19 @@ void draw() {
   }
 }
 
-  float diff(int p, int off) {
-    if (p + off < 0 || p + off >= numPixels)
-      return 0;
-      return red(webImg.pixels[p+off]) - red(webImg.pixels[p]) +
-      green(webImg.pixels[p+off]) - green(webImg.pixels[p]) +
-      blue(webImg.pixels[p+off]) - blue(webImg.pixels[p]);
-  }
+float diff(int p, int off) {
+  if (p + off < 0 || p + off >= numPixels)
+    return 0;
+  return red(webImg.pixels[p+off]) - red(webImg.pixels[p]) +
+    green(webImg.pixels[p+off]) - green(webImg.pixels[p]) +
+    blue(webImg.pixels[p+off]) - blue(webImg.pixels[p]);
+}
 
-  void sendOsc(int[] px) {
-    OscMessage msg = new OscMessage("/wek/inputs");
-    // msg.add(px);
-    for (int i = 0; i < px.length; i++) {
-      msg.add(float(px[i]));
-    }
-    oscP5.send(msg, dest);
+void sendOsc(int[] px) {
+  OscMessage msg = new OscMessage("/wek/inputs");
+  // msg.add(px);
+  for (int i = 0; i < px.length; i++) {
+    msg.add(float(px[i]));
   }
+  oscP5.send(msg, dest);
+}
