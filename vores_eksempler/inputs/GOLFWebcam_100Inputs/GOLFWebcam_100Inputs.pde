@@ -8,9 +8,7 @@ import oscP5.*;
 import netP5.*;
 
 PImage webImg;
-String url2 = "http://webcam.trafikken.dk/webcam/GroennemoseAlle_Cam1.jpg";
 String url = "http://87.59.28.70/record/current.jpg?rand=0.3371342047624182";
-
 int numPixels;
 boolean first = true;
 
@@ -21,25 +19,21 @@ int boxWidth = 64;
 int boxHeight = 48;
 
 int numHoriz;
-;
 int numVert;
-;
+
+PImage img;
 
 color[] downPix;
-
-Capture video;
 
 OscP5 oscP5;
 NetAddress dest;
 
 void setup() {
-  // colorMode(HSB);
-  size(640, 480, P2D);
-  //frameRate(10);
+  size(640, 480);
 
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 9000);
-  dest = new NetAddress("192.168.8.102", 6448);
+  dest = new NetAddress("127.0.0.1", 6448);
 
   webImg = loadImage(url, "jpg");
 
@@ -47,6 +41,7 @@ void setup() {
   numVert = webImg.height/boxHeight;
 
   downPix = new color[numHoriz * numVert];
+  img = loadImage("tgornik_floating.png");
 }
 
 void draw() {
@@ -56,18 +51,10 @@ void draw() {
   image(webImg, 0, 0);
   loadPixels();
   noStroke();
+  image(img, mouseX, mouseY, 200,200);
+  
 
-  webImg.loadPixels(); // Make the pixels of video available
-  /*for (int i = 0; i < numPixels; i++) {
-   int x = i % video.width;
-   int y = i / video.width;
-   float xscl = (float) width / (float) video.width;
-   float yscl = (float) height / (float) video.height;
-   
-   float gradient = diff(i, -1) + diff(i, +1) + diff(i, -video.width) + diff(i, video.width);
-   fill(color(gradient, gradient, gradient));
-   rect(x * xscl, y * yscl, xscl, yscl);
-   } */
+  webImg.loadPixels(); // Make the pixels of webcam available
   int boxNum = 0;
   int tot = boxWidth*boxHeight;
   for (int x = 0; x < webImg.width; x += boxWidth) {
@@ -93,14 +80,12 @@ void draw() {
       // fill (color(red, green, blue));
       rect(x, y, boxWidth, boxHeight);
       boxNum++;
-      /* if (first) {
-       println(boxNum);
-       } */
     }
     sendOsc(downPix);
     first = false;
-    fill(0);
-    text("Sending 100 inputs to port 6448 using message /wek/inputs", 10, 10);
+    fill(200);
+    textSize(24);
+    text("Sending 100 inputs to port 6448 using message", 20, height-20);
   }
 }
 
