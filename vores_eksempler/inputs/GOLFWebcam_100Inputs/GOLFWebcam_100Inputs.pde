@@ -8,7 +8,9 @@ import oscP5.*;
 import netP5.*;
 
 PImage webImg;
-String url = "http://87.59.28.70/record/current.jpg?rand=0.3371342047624182";
+//String url = "http://87.59.28.70/record/current.jpg?rand=0.3371342047624182";
+String url = "http://wse1.resortcams.com:80/live-audio/hogsbreath1.stream_aac/playlist.m3u8";
+
 int numPixels;
 boolean first = true;
 
@@ -41,7 +43,6 @@ void setup() {
   numVert = webImg.height/boxHeight;
 
   downPix = new color[numHoriz * numVert];
-  img = loadImage("tgornik_floating.png");
 }
 
 void draw() {
@@ -51,7 +52,6 @@ void draw() {
   image(webImg, 0, 0);
   loadPixels();
   noStroke();
-  image(img, mouseX, mouseY, 200,200);
   
 
   webImg.loadPixels(); // Make the pixels of webcam available
